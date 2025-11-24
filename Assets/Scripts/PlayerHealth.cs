@@ -26,6 +26,10 @@ public class PlayerHealth : MonoBehaviour
             healthSlider.maxValue = maxHealth;
             healthSlider.value = currentHealth;
         }
+
+        // UI 매니저(상태창) 초기화
+        if (UIManager.instance != null)
+            UIManager.instance.UpdateHealth(currentHealth, maxHealth);
     }
 
     // === 패링 상태 확인 함수 ===
@@ -74,6 +78,10 @@ public class PlayerHealth : MonoBehaviour
             healthSlider.value = currentHealth;
         }
 
+        if (UIManager.instance != null) 
+        { 
+            UIManager.instance.UpdateHealth(currentHealth, maxHealth);
+        }
         // 피격 애니메이션 및 무적 코루틴 실행
         animator.SetTrigger("Hurt");
         StartCoroutine(BecomeTemporarilyInvincible(1.0f)); // 1초간 무적 상태 부여

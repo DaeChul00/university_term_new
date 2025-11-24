@@ -11,17 +11,32 @@ public class EnemyAI : MonoBehaviour
     public float attackCooldown = 2f;      // 다음 공격까지의 쿨타임
     public Collider2D attackCollider;       // 적의 공격 판정 콜라이더 (Inspector에서 연결)
 
+    [Header("Jump Settings")]
+    public float jumpForce = 7f; // 점프에 가해지는 힘
+    public float minJumpCooldown = 2f; // 최소 쿨타임 (예: 2초)
+    public float maxJumpCooldown = 6f; // 최대 쿨타임 (예: 6초)
+
+    [Header("Ground Check")]
+    public Transform groundCheck; // Inspector에서 GroundCheck 오브젝트 연결
+    public LayerMask whatIsGround; // Ground 레이어를 Inspector에서 선택
+
     private Transform player;              // 추격 대상 (플레이어)
     private Rigidbody2D rb;
     private Animator animator;
     private bool canAttack = true;         // 현재 공격 가능한 상태인지 확인
     private bool isStunned = false;        // 현재 기절 상태인지 확인 (패링용)
+    private float lastJumpTime; // 마지막 점프 시간
+    private bool isGrounded; // 현재 땅에 닿았는지 여부
+    private float nextJumpCooldown; // 다음 점프까지 필요한 무작위 쿨타임 값
 
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();
 
+        lastJumpTime = Time.time; // 초기 쿨타임 설정
+
+        nextJumpCooldown = Random.Range(minJumpCooldown, maxJumpCooldown); // 초기 쿨타임을 무작위로 설정
         // 게임 시작 시 "Player" 태그를 가진 오브젝트를 찾아서 target에 연결
         GameObject playerObject = GameObject.FindGameObjectWithTag("Player");
         if (playerObject != null)
@@ -39,6 +54,11 @@ public class EnemyAI : MonoBehaviour
             animator.SetFloat("speed", 0);
             return;
         }
+        //Ground Check 함수를 매 프레임 호출
+        CheckIfGrounded();
+
+        //  진단용 로그 추가: isGrounded와 CanJump의 상태를 출력
+        Debug.Log($"Grounded: {isGrounded} | CanJump: {CanJump()}");
 
         float distanceToPlayer = Vector2.Distance(transform.position, player.position);
 
@@ -70,6 +90,52 @@ public class EnemyAI : MonoBehaviour
             rb.velocity = Vector2.zero;
             animator.SetFloat("speed", 0);
         }
+
+        // 점프 로직: 쿨타임이 지났고, 땅에 닿아있을 때만 점프 가능
+        if (CanJump() && isGrounded)
+        {
+            Jump();
+        }
+
+    }
+    void CheckIfGrounded()
+    {
+        // OverlapCircle을 사용하여 GroundCheck 위치에서 whatIsGround 레이어와 겹치는지 확인
+        // 0.1f는 감지할 원의 반지름
+        if (groundCheck != null)
+        {
+            isGrounded = Physics2D.OverlapCircle(groundCheck.position, 0.1f, whatIsGround);
+        }
+        else
+        {
+            isGrounded = true; // GroundCheck 오브젝트가 없으면 기본적으로 땅에 있다고 가정
+        }
+    }
+
+    private bool CanJump()
+    {
+        // 1. 점프 쿨타임이 지났는지 확인
+        if (Time.time < lastJumpTime + nextJumpCooldown)
+        {
+            return false;
+        }
+        return true;
+    }
+
+    public void Jump()
+    {
+        // 애니메이션 실행
+        animator.SetTrigger("Jump"); 
+
+        // 위쪽으로 힘 가하기
+        rb.velocity = new Vector2(rb.velocity.x, 0f); // 수직 속도 초기화
+        rb.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
+
+        // 마지막 점프 시간 업데이트
+        lastJumpTime = Time.time;
+
+        // 점프 후, 다음 점프를 위한 새로운 무작위 쿨타임 설정
+        nextJumpCooldown = Random.Range(minJumpCooldown, maxJumpCooldown);
     }
 
     void ChasePlayer()

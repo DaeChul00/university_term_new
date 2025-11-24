@@ -909,6 +909,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e9f394d015984bb40bd58634a39667c3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  target: {fileID: 0}
   zOffset: -10
   mapBoundary: {fileID: 289504809}
 --- !u!1 &698423067
@@ -1461,7 +1462,7 @@ GameObject:
   - component: {fileID: 2147059163}
   - component: {fileID: 2147059162}
   - component: {fileID: 2147059161}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Ground
   m_TagString: Ground
   m_Icon: {fileID: 0}

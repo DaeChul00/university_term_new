@@ -8,6 +8,8 @@ public class PlayerController : MonoBehaviour
     public float jumpForce = 5f;     // 점프 힘
     public Collider2D attackCollider; // 공격 판정을 위한 콜라이더
     public BoxCollider2D mapBoundary; // 맵 경계 콜라이더
+    public float attackDamage = 10f; // 기본 공격력
+
 
     // === Private Variables ===
     private Rigidbody2D rb;          // Rigidbody2D 컴포넌트
@@ -27,6 +29,10 @@ public class PlayerController : MonoBehaviour
         {
             attackCollider.enabled = false;
         }
+
+        // 시작 시 UI에 초기 공격력 표시
+        if (UIManager.instance != null)
+            UIManager.instance.UpdateAttack(attackDamage);
     }
 
     void Update()
@@ -125,7 +131,7 @@ public class PlayerController : MonoBehaviour
                     EnemyHealth enemyHealth = hit.GetComponent<EnemyHealth>();
                     if (enemyHealth != null)
                     {
-                        enemyHealth.TakeDamage(20f);
+                        enemyHealth.TakeDamage(attackDamage);
                         Debug.Log("적이 피해를 입었습니다!");
                     }
                 }
@@ -144,5 +150,18 @@ public class PlayerController : MonoBehaviour
         // isAttacking을 false로 설정하여 다음 공격을 허용
         isAttacking = false;
         Debug.Log("EndAttack 호출. 다음 공격 가능.");
+    }
+
+    // 아이템이 호출하는 공격력 증가 함수
+    public void IncreaseAttack(float amount)
+    {
+        attackDamage += amount;
+        Debug.Log("현재 플레이어 공격력: " + attackDamage);
+
+        // UI 매니저가 있다면 업데이트 (선택 사항)
+        if (UIManager.instance != null)
+        {
+            UIManager.instance.UpdateAttack(attackDamage);
+        }
     }
 }
