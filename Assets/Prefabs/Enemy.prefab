@@ -327,7 +327,6 @@ MonoBehaviour:
   moveSpeed: 4
   sightRange: 7
   attackRange: 2
-  attackDamage: 20
   attackCooldown: 2
   attackCollider: {fileID: 8774445540519005160}
   jumpForce: 7
@@ -337,6 +336,12 @@ MonoBehaviour:
   whatIsGround:
     serializedVersion: 2
     m_Bits: 64
+  chargeAttackChance: 0.2
+  executeJumpForce: 12
+  normalAttackDamage: 10
+  chargeAttackDamage: 30
+  normalGravityScale: 1
+  fastFallGravityScale: 5
 --- !u!1 &4299758353679561440
 GameObject:
   m_ObjectHideFlags: 0
@@ -629,7 +634,7 @@ Transform:
   m_GameObject: {fileID: 7940799647085171217}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: -1.3, z: 0}
+  m_LocalPosition: {x: 0, y: -1.355, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
