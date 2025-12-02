@@ -17,6 +17,7 @@ public class PlayerController : MonoBehaviour
     private bool isGrounded;         // 땅에 닿았는지 확인 플래그
     private bool isAttacking = false; // 공격 중인지 확인하는 플래그 (이중 공격 방지)
     private PlayerHealth playerHealth;
+    private bool canMove = true; // 이동 가능 여부 
 
     void Start()
     {
@@ -37,43 +38,38 @@ public class PlayerController : MonoBehaviour
 
     void Update()
     {
-        HandleMovement();
-
-        // === 점프 ===
-        if (Input.GetKeyDown(KeyCode.C) && isGrounded)
+        // canMove가 true일 때만 이동 및 점프 로직 실행
+        if (canMove)
         {
-            rb.velocity = new Vector2(rb.velocity.x, jumpForce);
+            // 이동
+            HandleMovement();
+
+            // === 점프 ===
+            if (Input.GetKeyDown(KeyCode.C) && isGrounded)
+            {
+                rb.velocity = new Vector2(rb.velocity.x, jumpForce);
+            }
         }
 
         // Animator의 'IsJumping' 파라미터 업데이트
         animator.SetBool("IsJumping", !isGrounded);
 
         // === 공격 ===
-        // isAttacking이 false일 때만 공격 허용
         if (Input.GetKeyDown(KeyCode.X) && !isAttacking)
         {
             animator.SetTrigger("Attack");
-            isAttacking = true; // 공격 시작과 동시에 true로 설정하여 추가 입력 차단
+            isAttacking = true;
         }
 
-        // === 맵 경계 내에서 플레이어 위치 제한 ===
-        if (mapBoundary != null)
-        {
-            float minX = mapBoundary.bounds.min.x;
-            float maxX = mapBoundary.bounds.max.x;
-
-            Vector3 currentPos = transform.position;
-            currentPos.x = Mathf.Clamp(currentPos.x, minX, maxX);
-            transform.position = currentPos;
-        }
-
-        if (Input.GetKeyDown(KeyCode.Q) && !isAttacking && !playerHealth.IsParrying()) // Q 키를 패링 입력으로 사용
+        // === 패링 ===
+        if (Input.GetKeyDown(KeyCode.Q) && !isAttacking && !playerHealth.IsParrying())
         {
             if (playerHealth != null)
             {
                 playerHealth.AttemptParry();
             }
         }
+
     }
 
     // === 캐릭터 이동 및 방향 전환을 처리하는 함수 ===
@@ -158,10 +154,25 @@ public class PlayerController : MonoBehaviour
         attackDamage += amount;
         Debug.Log("현재 플레이어 공격력: " + attackDamage);
 
-        // UI 매니저가 있다면 업데이트 (선택 사항)
+        // UI 매니저가 있다면 업데이트
         if (UIManager.instance != null)
         {
             UIManager.instance.UpdateAttack(attackDamage);
         }
     }
+
+    // PlayerHealth가 넉백 시간을 알리기 위해 호출하는 함수
+    public void ApplyKnockbackTime(float duration)
+    {
+        StartCoroutine(KnockbackRoutine(duration));
+    }
+
+    // 넉백 중 이동을 차단하는 코루틴
+    private IEnumerator KnockbackRoutine(float duration)
+    {
+        canMove = false; // 이동 차단
+        yield return new WaitForSeconds(duration);
+        canMove = true;  // 이동 허용
+    }
+
 }

@@ -62,8 +62,8 @@ Transform:
   m_GameObject: {fileID: 1812934230235448663}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalPosition: {x: 0.08, y: 0, z: 0}
+  m_LocalScale: {x: 1.1583, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 4612143054597418745}
@@ -128,6 +128,7 @@ GameObject:
   - component: {fileID: 3428805317606900147}
   - component: {fileID: 6888218568859905918}
   - component: {fileID: 517984357981108939}
+  - component: {fileID: 4045669816606618896}
   m_Layer: 0
   m_Name: Enemy
   m_TagString: Enemy
@@ -337,11 +338,25 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 64
   chargeAttackChance: 0.2
-  executeJumpForce: 12
+  executeJumpForce: 15
   normalAttackDamage: 10
   chargeAttackDamage: 30
   normalGravityScale: 1
   fastFallGravityScale: 5
+--- !u!114 &4045669816606618896
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3440544673959538126}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7c61a2352a299d24bb78a2dcb571ec5d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  contactDamage: 5
+  knockbackForce: 500
 --- !u!1 &4299758353679561440
 GameObject:
   m_ObjectHideFlags: 0

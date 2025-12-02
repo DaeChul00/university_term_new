@@ -14,11 +14,13 @@ public class PlayerHealth : MonoBehaviour
     private Animator animator;
     private bool isParrying = false;  // 현재 패링 시도 중인지
     private bool isInvincible = false; // 피격 후 무적 상태인지
+    private PlayerController playerController;
 
     void Start()
     {
         currentHealth = maxHealth;
         animator = GetComponent<Animator>();
+        playerController = GetComponent<PlayerController>();
 
         // 체력 바 초기화
         if (healthSlider != null)
@@ -37,6 +39,13 @@ public class PlayerHealth : MonoBehaviour
     public bool IsParrying()
     {
         return isParrying;
+    }
+
+    // 외부 스크립트(적)가 현재 무적 상태인지 확인하기 위해 호출하는 함수
+    public bool IsInvincible()
+    {
+        // private 변수인 isInvincible의 현재 값을 반환합니다.
+        return isInvincible;
     }
 
     // === 피격 판정 함수 (핵심 수정) ===
@@ -82,6 +91,14 @@ public class PlayerHealth : MonoBehaviour
         { 
             UIManager.instance.UpdateHealth(currentHealth, maxHealth);
         }
+
+        // PlayerController에 넉백 시간 전달
+        if (playerController != null)
+        {
+            // 넉백 시간 (예: 0.2초)을 전달하여 그 시간 동안 이동을 막음
+            playerController.ApplyKnockbackTime(0.2f);
+        }
+
         // 피격 애니메이션 및 무적 코루틴 실행
         animator.SetTrigger("Hurt");
         StartCoroutine(BecomeTemporarilyInvincible(1.0f)); // 1초간 무적 상태 부여

@@ -984,7 +984,7 @@ Camera:
     height: 1
   near clip plane: 0.01
   far clip plane: 1000
-  field of view: 60
+  field of view: 105.9
   orthographic: 0
   orthographic size: 4
   m_Depth: -1
@@ -4130,9 +4130,13 @@ Tilemap:
   m_TileAssetArray:
   - m_RefCount: 288
     m_Data: {fileID: 11400000, guid: 34899864b88443a41b998ad4f39f9b5e, type: 2}
+  - m_RefCount: 0
+    m_Data: {fileID: 0}
   m_TileSpriteArray:
   - m_RefCount: 288
     m_Data: {fileID: 21300000, guid: 18f0ca34bd0b928469fb7956c1a0fa08, type: 3}
+  - m_RefCount: 0
+    m_Data: {fileID: 0}
   m_TileMatrixArray:
   - m_RefCount: 288
     m_Data:
@@ -4159,7 +4163,7 @@ Tilemap:
   m_AnimationFrameRate: 1
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_Origin: {x: -48, y: -3, z: 0}
-  m_Size: {x: 96, y: 3, z: 1}
+  m_Size: {x: 96, y: 23, z: 1}
   m_TileAnchor: {x: 0.5, y: 0.5, z: 0}
   m_TileOrientation: 0
   m_TileOrientationMatrix:
@@ -4609,12 +4613,24 @@ PrefabInstance:
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: 517984357981108939, guid: 21756b5974f027f4da32bc949e7626bd, type: 3}
+      propertyPath: moveSpeed
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 517984357981108939, guid: 21756b5974f027f4da32bc949e7626bd, type: 3}
       propertyPath: executeJumpForce
-      value: 12
+      value: 18
+      objectReference: {fileID: 0}
+    - target: {fileID: 517984357981108939, guid: 21756b5974f027f4da32bc949e7626bd, type: 3}
+      propertyPath: fastFallGravityScale
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 3440544673959538126, guid: 21756b5974f027f4da32bc949e7626bd, type: 3}
       propertyPath: m_Name
       value: Enemy
+      objectReference: {fileID: 0}
+    - target: {fileID: 4045669816606618896, guid: 21756b5974f027f4da32bc949e7626bd, type: 3}
+      propertyPath: knockbackForce
+      value: 500
       objectReference: {fileID: 0}
     - target: {fileID: 4612143054597418745, guid: 21756b5974f027f4da32bc949e7626bd, type: 3}
       propertyPath: m_LocalPosition.x
@@ -4713,9 +4729,17 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5271074841490303629, guid: b53434c4f83e4804a8a7ab7c6d18d694, type: 3}
+      propertyPath: m_GravityScale
+      value: 1.5
+      objectReference: {fileID: 0}
     - target: {fileID: 7176272802037285147, guid: b53434c4f83e4804a8a7ab7c6d18d694, type: 3}
       propertyPath: m_Name
       value: Player
+      objectReference: {fileID: 0}
+    - target: {fileID: 8904254816512748178, guid: b53434c4f83e4804a8a7ab7c6d18d694, type: 3}
+      propertyPath: jumpForce
+      value: 8
       objectReference: {fileID: 0}
     - target: {fileID: 8904254816512748178, guid: b53434c4f83e4804a8a7ab7c6d18d694, type: 3}
       propertyPath: mapBoundary
