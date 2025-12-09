@@ -212,8 +212,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0.25}
   m_AnchorMax: {x: 1, y: 0.75}
-  m_AnchoredPosition: {x: -5, y: 0}
-  m_SizeDelta: {x: -20, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &4336924980229795071
 GameObject:
@@ -414,7 +414,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 10, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &2134028849777097269
 CanvasRenderer:
@@ -609,7 +609,6 @@ MonoBehaviour:
   jumpForce: 7
   attackCollider: {fileID: 614162130026200856}
   mapBoundary: {fileID: 0}
-  attackDamage: 10
 --- !u!114 &5972831325640346082
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -622,7 +621,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9195d80add87b5342a02eb4de8f4e339, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxHealth: 100
+  baseMaxHealth: 100
   parryWindow: 0.2
   healthSlider: {fileID: 4338452854009171370}
 --- !u!70 &8603580233496324318

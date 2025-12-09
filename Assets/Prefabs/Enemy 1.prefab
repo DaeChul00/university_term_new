@@ -33,8 +33,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0.25}
   m_AnchorMax: {x: 1, y: 0.75}
-  m_AnchoredPosition: {x: -5, y: 0}
-  m_SizeDelta: {x: -20, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &1812934230235448663
 GameObject:
@@ -326,9 +326,21 @@ MonoBehaviour:
   moveSpeed: 4
   sightRange: 7
   attackRange: 2
-  attackDamage: 20
   attackCooldown: 2
   attackCollider: {fileID: 8774445540519005160}
+  jumpForce: 7
+  minJumpCooldown: 2
+  maxJumpCooldown: 6
+  groundCheck: {fileID: 0}
+  whatIsGround:
+    serializedVersion: 2
+    m_Bits: 0
+  chargeAttackChance: 0.15
+  executeJumpForce: 15
+  normalAttackDamage: 10
+  chargeAttackDamage: 30
+  normalGravityScale: 1
+  fastFallGravityScale: 5
 --- !u!1 &4299758353679561440
 GameObject:
   m_ObjectHideFlags: 0
@@ -630,7 +642,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 10, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &2748155105107674949
 CanvasRenderer:
