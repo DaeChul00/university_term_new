@@ -1,23 +1,22 @@
-using UnityEngine;
-using System.Collections; // ÄÚ·çÆ¾ »ç¿ëÀ» À§ÇØ Æ÷ÇÔÇÕ´Ï´Ù.
+ï»¿using UnityEngine;
+using System.Collections;
 
 public class PlayerController : MonoBehaviour
 {
-    // === Public Variables (Inspector¿¡¼­ ¼³Á¤) ===
-    public float moveSpeed = 4f;     // ÀÌµ¿ ¼Óµµ
-    public float jumpForce = 5f;     // Á¡ÇÁ Èû
-    public Collider2D attackCollider; // °ø°İ ÆÇÁ¤À» À§ÇÑ Äİ¶óÀÌ´õ
-    public BoxCollider2D mapBoundary; // ¸Ê °æ°è Äİ¶óÀÌ´õ
-    public float attackDamage = 10f; // ±âº» °ø°İ·Â
+    // === Public Variables (Inspectorì—ì„œ ì„¤ì •) ===
+    public float moveSpeed = 4f;
+    public float jumpForce = 5f;
+    public Collider2D attackCollider;
+    public BoxCollider2D mapBoundary;
 
 
     // === Private Variables ===
-    private Rigidbody2D rb;          // Rigidbody2D ÄÄÆ÷³ÍÆ®
-    private Animator animator;       // Animator ÄÄÆ÷³ÍÆ®
-    private bool isGrounded;         // ¶¥¿¡ ´ê¾Ò´ÂÁö È®ÀÎ ÇÃ·¡±×
-    private bool isAttacking = false; // °ø°İ ÁßÀÎÁö È®ÀÎÇÏ´Â ÇÃ·¡±× (ÀÌÁß °ø°İ ¹æÁö)
+    private Rigidbody2D rb;
+    private Animator animator;
+    private bool isGrounded;
+    private bool isAttacking = false;
     private PlayerHealth playerHealth;
-    private bool canMove = true; // ÀÌµ¿ °¡´É ¿©ºÎ 
+    private bool canMove = true;
 
     void Start()
     {
@@ -25,54 +24,53 @@ public class PlayerController : MonoBehaviour
         animator = GetComponent<Animator>();
         playerHealth = GetComponent<PlayerHealth>();
 
-        // ½ÃÀÛ ½Ã °ø°İ Äİ¶óÀÌ´õ ºñÈ°¼ºÈ­
+        // ì‹œì‘ ì‹œ ê³µê²© ì½œë¼ì´ë” ë¹„í™œì„±í™”
         if (attackCollider != null)
         {
             attackCollider.enabled = false;
         }
 
-        // ½ÃÀÛ ½Ã UI¿¡ ÃÊ±â °ø°İ·Â Ç¥½Ã
-        if (UIManager.instance != null)
-            UIManager.instance.UpdateAttack(attackDamage);
+        // UIì— ì €ì¥ëœ ê³µê²©ë ¥ í‘œì‹œ
+        if (UIManager.instance != null && PlayerStatsManager.Instance != null)
+        {
+            // ë§¤ë‹ˆì €ì˜ ê³µê²©ë ¥ì„ ê°€ì ¸ì™€ì„œ UIë¥¼ ì—…ë°ì´íŠ¸í•©ë‹ˆë‹¤.
+            UIManager.instance.UpdateAttack(PlayerStatsManager.Instance.attackDamage);
+        }
     }
 
     void Update()
     {
-        // canMove°¡ trueÀÏ ¶§¸¸ ÀÌµ¿ ¹× Á¡ÇÁ ·ÎÁ÷ ½ÇÇà
+        // canMoveê°€ trueì¼ ë•Œë§Œ ì´ë™ ë° ì í”„ ë¡œì§ ì‹¤í–‰
         if (canMove)
         {
-            // ÀÌµ¿
+            // ì´ë™
             HandleMovement();
 
-            // === Á¡ÇÁ ===
+            // === ì í”„ ===
             if (Input.GetKeyDown(KeyCode.C) && isGrounded)
             {
                 rb.velocity = new Vector2(rb.velocity.x, jumpForce);
             }
         }
 
-        // AnimatorÀÇ 'IsJumping' ÆÄ¶ó¹ÌÅÍ ¾÷µ¥ÀÌÆ®
+        // Animatorì˜ 'IsJumping' íŒŒë¼ë¯¸í„° ì—…ë°ì´íŠ¸
         animator.SetBool("IsJumping", !isGrounded);
 
-        // === °ø°İ ===
+        // === ê³µê²© ===
         if (Input.GetKeyDown(KeyCode.X) && !isAttacking)
         {
             animator.SetTrigger("Attack");
             isAttacking = true;
         }
 
-        // === ÆĞ¸µ ===
-        if (Input.GetKeyDown(KeyCode.Q) && !isAttacking && !playerHealth.IsParrying())
+        // === íŒ¨ë§ ===
+        if (Input.GetKeyDown(KeyCode.Q) && !isAttacking && playerHealth != null && !playerHealth.IsParrying())
         {
-            if (playerHealth != null)
-            {
-                playerHealth.AttemptParry();
-            }
+            playerHealth.AttemptParry();
         }
-
     }
 
-    // === Ä³¸¯ÅÍ ÀÌµ¿ ¹× ¹æÇâ ÀüÈ¯À» Ã³¸®ÇÏ´Â ÇÔ¼ö ===
+    // === ìºë¦­í„° ì´ë™ ë° ë°©í–¥ ì „í™˜ì„ ì²˜ë¦¬í•˜ëŠ” í•¨ìˆ˜ ===
     void HandleMovement()
     {
         float horizontalInput = Input.GetAxis("Horizontal");
@@ -80,7 +78,7 @@ public class PlayerController : MonoBehaviour
 
         animator.SetFloat("speed", Mathf.Abs(horizontalInput));
 
-        // ¹æÇâ ÀüÈ¯ (ScaleÀ» ÀÌ¿ëÇÑ ½ºÇÁ¶óÀÌÆ® ¹İÀü)
+        // ë°©í–¥ ì „í™˜ (Scaleì„ ì´ìš©í•œ ìŠ¤í”„ë¼ì´íŠ¸ ë°˜ì „)
         if (horizontalInput > 0)
         {
             transform.localScale = new Vector3(1, 1, 1);
@@ -91,7 +89,7 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    // === ¹Ù´Ú Ã¼Å© ===
+    // === ë°”ë‹¥ ì²´í¬ ===
     private void OnCollisionEnter2D(Collision2D collision)
     {
         if (collision.gameObject.CompareTag("Ground"))
@@ -108,16 +106,16 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    // === ¾Ö´Ï¸ŞÀÌ¼Ç ÀÌº¥Æ®·Î È£ÃâµÇ´Â ÇÔ¼öµé (°ø°İ ÆÇÁ¤) ===
+    // === ì• ë‹ˆë©”ì´ì…˜ ì´ë²¤íŠ¸ë¡œ í˜¸ì¶œë˜ëŠ” í•¨ìˆ˜ë“¤ (ê³µê²© íŒì •) ===
 
-    // °ø°İ ¾Ö´Ï¸ŞÀÌ¼Ç ½ÃÀÛ ÇÁ·¹ÀÓ¿¡¼­ È£Ãâ (°ø°İ ÆÇÁ¤ ½ÃÀÛ)
+    // ê³µê²© ì• ë‹ˆë©”ì´ì…˜ ì‹œì‘ í”„ë ˆì„ì—ì„œ í˜¸ì¶œ (ê³µê²© íŒì • ì‹œì‘)
     public void StartAttack()
     {
         if (attackCollider != null)
         {
-            attackCollider.enabled = true; // Äİ¶óÀÌ´õ È°¼ºÈ­
+            attackCollider.enabled = true; // ì½œë¼ì´ë” í™œì„±í™”
 
-            // µ¥¹ÌÁö ·ÎÁ÷
+            // ë°ë¯¸ì§€ ë¡œì§
             Collider2D[] hitObjects = Physics2D.OverlapBoxAll(attackCollider.bounds.center, attackCollider.bounds.size, 0);
 
             foreach (Collider2D hit in hitObjects)
@@ -125,54 +123,55 @@ public class PlayerController : MonoBehaviour
                 if (hit.CompareTag("Enemy"))
                 {
                     EnemyHealth enemyHealth = hit.GetComponent<EnemyHealth>();
-                    if (enemyHealth != null)
+                    if (enemyHealth != null && PlayerStatsManager.Instance != null)
                     {
-                        enemyHealth.TakeDamage(attackDamage);
-                        Debug.Log("ÀûÀÌ ÇÇÇØ¸¦ ÀÔ¾ú½À´Ï´Ù!");
+                        // â­ï¸ PlayerStatsManagerì˜ ê³µê²©ë ¥ì„ ì‚¬ìš©í•©ë‹ˆë‹¤. â­ï¸
+                        enemyHealth.TakeDamage(PlayerStatsManager.Instance.attackDamage);
                     }
                 }
             }
         }
     }
 
-    // °ø°İ ¾Ö´Ï¸ŞÀÌ¼Ç Á¾·á ÇÁ·¹ÀÓ¿¡¼­ È£Ãâ (°ø°İ ÆÇÁ¤ Á¾·á)
+    // ê³µê²© ì• ë‹ˆë©”ì´ì…˜ ì¢…ë£Œ í”„ë ˆì„ì—ì„œ í˜¸ì¶œ (ê³µê²© íŒì • ì¢…ë£Œ)
     public void EndAttack()
     {
         if (attackCollider != null)
         {
-            attackCollider.enabled = false; // Äİ¶óÀÌ´õ ºñÈ°¼ºÈ­
+            attackCollider.enabled = false; // ì½œë¼ì´ë” ë¹„í™œì„±í™”
         }
 
-        // isAttackingÀ» false·Î ¼³Á¤ÇÏ¿© ´ÙÀ½ °ø°İÀ» Çã¿ë
         isAttacking = false;
-        Debug.Log("EndAttack È£Ãâ. ´ÙÀ½ °ø°İ °¡´É.");
+        Debug.Log("EndAttack í˜¸ì¶œ. ë‹¤ìŒ ê³µê²© ê°€ëŠ¥.");
     }
 
-    // ¾ÆÀÌÅÛÀÌ È£ÃâÇÏ´Â °ø°İ·Â Áõ°¡ ÇÔ¼ö
+    // ì•„ì´í…œì´ í˜¸ì¶œí•˜ëŠ” ê³µê²©ë ¥ ì¦ê°€ í•¨ìˆ˜
     public void IncreaseAttack(float amount)
     {
-        attackDamage += amount;
-        Debug.Log("ÇöÀç ÇÃ·¹ÀÌ¾î °ø°İ·Â: " + attackDamage);
+        if (PlayerStatsManager.Instance == null) return;
 
-        // UI ¸Å´ÏÀú°¡ ÀÖ´Ù¸é ¾÷µ¥ÀÌÆ®
+        // PlayerStatsManagerì˜ ê³µê²©ë ¥ì„ ì—…ë°ì´íŠ¸í•©ë‹ˆë‹¤.
+        PlayerStatsManager.Instance.attackDamage += amount;
+
+        // UI ë§¤ë‹ˆì €ê°€ ìˆë‹¤ë©´ ì—…ë°ì´íŠ¸
         if (UIManager.instance != null)
         {
-            UIManager.instance.UpdateAttack(attackDamage);
+            UIManager.instance.UpdateAttack(PlayerStatsManager.Instance.attackDamage);
         }
     }
 
-    // PlayerHealth°¡ ³Ë¹é ½Ã°£À» ¾Ë¸®±â À§ÇØ È£ÃâÇÏ´Â ÇÔ¼ö
+    // PlayerHealthê°€ ë„‰ë°± ì‹œê°„ì„ ì•Œë¦¬ê¸° ìœ„í•´ í˜¸ì¶œí•˜ëŠ” í•¨ìˆ˜
     public void ApplyKnockbackTime(float duration)
     {
         StartCoroutine(KnockbackRoutine(duration));
     }
 
-    // ³Ë¹é Áß ÀÌµ¿À» Â÷´ÜÇÏ´Â ÄÚ·çÆ¾
+    // ë„‰ë°± ì¤‘ ì´ë™ì„ ì°¨ë‹¨í•˜ëŠ” ì½”ë£¨í‹´
     private IEnumerator KnockbackRoutine(float duration)
     {
-        canMove = false; // ÀÌµ¿ Â÷´Ü
+        canMove = false; // ì´ë™ ì°¨ë‹¨
         yield return new WaitForSeconds(duration);
-        canMove = true;  // ÀÌµ¿ Çã¿ë
+        canMove = true;Â  // ì´ë™ í—ˆìš©
     }
 
 }

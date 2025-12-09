@@ -366,4 +366,9 @@ public class EnemyAI : MonoBehaviour
         }
     }
 
+    public bool IsExecutingSpecialAttack()
+    {
+        return isExecutingSpecialAttack;
+    }
+
 }

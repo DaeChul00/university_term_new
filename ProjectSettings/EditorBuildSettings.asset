@@ -11,4 +11,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Grassland_Map.unity
     guid: fc0f182a64405d84b880eb1302fda5c3
+  - enabled: 1
+    path: Assets/Scenes/Winter_Map.unity
+    guid: d0fb9f60ac4a7ac48a936f6140dc399c
   m_configObjects: {}

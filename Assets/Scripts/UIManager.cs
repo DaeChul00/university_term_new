@@ -51,6 +51,13 @@ public class UIManager : MonoBehaviour
         if (instance == null)
         {
             instance = this;
+            // 이 오브젝트(UIManager)를 씬이 바뀌어도 파괴하지 않도록 설정
+            DontDestroyOnLoad(gameObject);
+        }
+        else
+        {
+            // 이미 다른 UIManager 인스턴스가 존재하면 현재 오브젝트는 파괴
+            Destroy(gameObject);
         }
     }
 

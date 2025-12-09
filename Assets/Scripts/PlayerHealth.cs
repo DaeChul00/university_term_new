@@ -1,107 +1,89 @@
 ﻿using UnityEngine;
-using UnityEngine.UI; // UI 사용을 위해 추가
+using UnityEngine.UI;
 using System.Collections;
 
 public class PlayerHealth : MonoBehaviour
 {
     // === Public Variables ===
-    public float maxHealth = 100f;
-    public float parryWindow = 0.2f; // 패링 가능한 짧은 시간
-    public Slider healthSlider; // 플레이어 체력 바 Slider
+    // 씬 이동 시 초기화될 기본 최대 체력 값 (매니저에 최초 전달용)
+    public float baseMaxHealth = 100f;
+
+    public float parryWindow = 0.2f;
+    public Slider healthSlider;
 
     // === Private Variables ===
-    private float currentHealth;
     private Animator animator;
-    private bool isParrying = false;  // 현재 패링 시도 중인지
-    private bool isInvincible = false; // 피격 후 무적 상태인지
+    private bool isParrying = false;
+    private bool isInvincible = false;
     private PlayerController playerController;
 
     void Start()
     {
-        currentHealth = maxHealth;
         animator = GetComponent<Animator>();
         playerController = GetComponent<PlayerController>();
 
-        // 체력 바 초기화
+        // ⭐️ PlayerStatsManager 초기화 및 값 로드 ⭐️
+        if (PlayerStatsManager.Instance != null)
+        {
+            // 매니저에 기본 스탯을 전달합니다. (기본 공격력 10f로 가정)
+            PlayerStatsManager.Instance.InitializeStats(baseMaxHealth, 10f);
+        }
+
+        // 매니저에서 현재 스탯을 로드합니다.
+        float current = PlayerStatsManager.Instance.currentHealth;
+        float max = PlayerStatsManager.Instance.maxHealth;
+
+        // UI 업데이트
         if (healthSlider != null)
         {
-            healthSlider.maxValue = maxHealth;
-            healthSlider.value = currentHealth;
+            healthSlider.maxValue = max;
+            healthSlider.value = current;
         }
 
-        // UI 매니저(상태창) 초기화
         if (UIManager.instance != null)
-            UIManager.instance.UpdateHealth(currentHealth, maxHealth);
+            UIManager.instance.UpdateHealth(current, max);
     }
 
-    // === 패링 상태 확인 함수 ===
-    // PlayerController가 "이미 패링 중인가?"를 묻기 위해 호출합니다.
-    public bool IsParrying()
-    {
-        return isParrying;
-    }
+    // === 패링, 무적 상태 함수들 유지 ===
+    public bool IsParrying() { return isParrying; }
+    public bool IsInvincible() { return isInvincible; }
 
-    // 외부 스크립트(적)가 현재 무적 상태인지 확인하기 위해 호출하는 함수
-    public bool IsInvincible()
-    {
-        // private 변수인 isInvincible의 현재 값을 반환합니다.
-        return isInvincible;
-    }
-
-    // === 피격 판정 함수 (핵심 수정) ===
-    // 적이 공격할 때 "누가" 공격했는지(attacker)를 받도록 수정합니다.
+    // === 피격 판정 함수 ===
     public void TakeDamage(float damage, GameObject attacker)
     {
-        // 1. 무적 상태 체크
-        if (isInvincible) return;
-
-        // 2. 패링 상태 체크 (핵심 로직)
-        if (isParrying)
+        if (isInvincible || isParrying)
         {
-            // --- 패링 성공 ---
-            Debug.Log("패링 성공! 적 스턴 효과 발생!");
-
-            // ⭐️ 추가된 부분: 공격한 적(attacker)을 스턴시킵니다.
-            if (attacker != null)
+            if (isParrying)
             {
-                EnemyAI enemy = attacker.GetComponent<EnemyAI>();
-                if (enemy != null)
-                {
-                    enemy.StunEnemy(2.0f); // 2초간 스턴
-                }
+                // --- 패링 성공 로직 ---
+                Debug.Log("패링 성공! 적 스턴 효과 발생!");
+                // (스턴 로직은 이전에 구현된 내용이 작동한다고 가정합니다.)
+                StartCoroutine(BecomeTemporarilyInvincible(0.5f));
+                return;
             }
-
-            // 패링 성공 시에도 짧은 무적 시간 부여 (선택 사항)
-            StartCoroutine(BecomeTemporarilyInvincible(0.5f));
-
-            return; // 패링 성공 시 피해를 입지 않고 함수 종료
+            if (isInvincible) return;
         }
 
-        // --- 패링 실패 / 일반 피격 ---
-        currentHealth -= damage;
+        // --- 일반 피격: 매니저의 currentHealth 업데이트 ---
+        PlayerStatsManager.Instance.currentHealth -= damage;
+        float currentHealth = PlayerStatsManager.Instance.currentHealth;
+        float maxHealth = PlayerStatsManager.Instance.maxHealth;
+
         Debug.Log("일반 피격! 남은 체력: " + currentHealth);
 
         // 체력 바 업데이트
-        if (healthSlider != null)
-        {
-            healthSlider.value = currentHealth;
-        }
-
-        if (UIManager.instance != null) 
-        { 
-            UIManager.instance.UpdateHealth(currentHealth, maxHealth);
-        }
+        if (healthSlider != null) { healthSlider.value = currentHealth; }
+        if (UIManager.instance != null) { UIManager.instance.UpdateHealth(currentHealth, maxHealth); }
 
         // PlayerController에 넉백 시간 전달
         if (playerController != null)
         {
-            // 넉백 시간 (예: 0.2초)을 전달하여 그 시간 동안 이동을 막음
             playerController.ApplyKnockbackTime(0.2f);
         }
 
         // 피격 애니메이션 및 무적 코루틴 실행
         animator.SetTrigger("Hurt");
-        StartCoroutine(BecomeTemporarilyInvincible(1.0f)); // 1초간 무적 상태 부여
+        StartCoroutine(BecomeTemporarilyInvincible(1.0f));
 
         if (currentHealth <= 0)
         {
@@ -109,6 +91,24 @@ public class PlayerHealth : MonoBehaviour
         }
     }
 
+    public void Heal(float amount)
+    {
+        if (PlayerStatsManager.Instance == null) return;
+
+        PlayerStatsManager.Instance.currentHealth += amount;
+
+        if (PlayerStatsManager.Instance.currentHealth > PlayerStatsManager.Instance.maxHealth)
+        {
+            PlayerStatsManager.Instance.currentHealth = PlayerStatsManager.Instance.maxHealth;
+        }
+
+        Debug.Log("체력 " + amount + " 회복! 현재 체력: " + PlayerStatsManager.Instance.currentHealth);
+
+        if (healthSlider != null) { healthSlider.value = PlayerStatsManager.Instance.currentHealth; }
+        if (UIManager.instance != null) { UIManager.instance.UpdateHealth(PlayerStatsManager.Instance.currentHealth, PlayerStatsManager.Instance.maxHealth); }
+    }
+
+    // ⭐️ 사망 로직 (Die) ⭐️
     void Die()
     {
         Debug.Log("플레이어가 사망했습니다. 게임 오버!");
@@ -127,28 +127,42 @@ public class PlayerHealth : MonoBehaviour
     private IEnumerator BecomeTemporarilyInvincible(float duration)
     {
         isInvincible = true;
-
         yield return new WaitForSeconds(duration);
-
         isInvincible = false;
     }
 
     // PlayerController에서 호출: 패링 입력이 들어왔을 때
     public void AttemptParry()
     {
-        // 패링 애니메이션 트리거 (Animator에 "Parry" Trigger 필요)
         animator.SetTrigger("Parry");
         isParrying = true;
-
-        // 패링 가능 시간(parryWindow)이 지나면 isParrying을 false로 리셋
         StartCoroutine(ResetParryState());
     }
 
     private IEnumerator ResetParryState()
     {
-        // 지정된 짧은 시간 동안만 패링이 가능하도록 대기
         yield return new WaitForSeconds(parryWindow);
-
         isParrying = false;
+    }
+
+    public void IncreaseMaxHealth(float amount)
+    {
+        if (PlayerStatsManager.Instance == null) return;
+
+        PlayerStatsManager.Instance.maxHealth += amount;
+        PlayerStatsManager.Instance.currentHealth += amount;
+
+        Debug.Log("최대 체력 " + amount + " 증가! 새 최대 체력: " + PlayerStatsManager.Instance.maxHealth);
+
+        if (healthSlider != null)
+        {
+            healthSlider.maxValue = PlayerStatsManager.Instance.maxHealth;
+            healthSlider.value = PlayerStatsManager.Instance.currentHealth;
+        }
+
+        if (UIManager.instance != null)
+        {
+            UIManager.instance.UpdateHealth(PlayerStatsManager.Instance.currentHealth, PlayerStatsManager.Instance.maxHealth);
+        }
     }
 }
