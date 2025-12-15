@@ -230,7 +230,7 @@ public class EnemyAI : MonoBehaviour
     }
 
     // PlayerHealth가 호출하는 스턴 함수
-    public void StunEnemy(float duration)
+    public void Stun(float duration)
     {
         // PlayerHealth 스크립트가 패링 성공 시 이 함수를 호출
         StartCoroutine(StunRoutine(duration));

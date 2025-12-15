@@ -338,7 +338,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 64
   chargeAttackChance: 0.2
-  executeJumpForce: 15
+  executeJumpForce: 18
   normalAttackDamage: 10
   chargeAttackDamage: 30
   normalGravityScale: 1

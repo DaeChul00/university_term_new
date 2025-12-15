@@ -38,4 +38,12 @@ public class PlayerStatsManager : MonoBehaviour
         }
         // 씬 이동 후 재접속 시에는 이미 저장된 값을 사용합니다.
     }
+    public void ResetStats()
+    {
+        // 현재 체력을 최대 체력으로 되돌립니다.
+        currentHealth = maxHealth;
+
+        Debug.Log("플레이어 스탯이 초기화되었습니다. 현재 체력: " + currentHealth);
+    }
+
 }

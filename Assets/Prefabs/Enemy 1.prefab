@@ -335,7 +335,7 @@ MonoBehaviour:
   whatIsGround:
     serializedVersion: 2
     m_Bits: 0
-  chargeAttackChance: 0.15
+  chargeAttackChance: 0
   executeJumpForce: 15
   normalAttackDamage: 10
   chargeAttackDamage: 30

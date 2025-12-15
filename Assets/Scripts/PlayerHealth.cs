@@ -57,7 +57,13 @@ public class PlayerHealth : MonoBehaviour
             {
                 // --- 패링 성공 로직 ---
                 Debug.Log("패링 성공! 적 스턴 효과 발생!");
-                // (스턴 로직은 이전에 구현된 내용이 작동한다고 가정합니다.)
+                EnemyAI enemyAI = attacker.GetComponent<EnemyAI>();
+                if (enemyAI != null)
+                {
+                    // ⭐️ EnemyAI에 스턴 함수 호출 (예: 1.5초 스턴) ⭐️
+                    enemyAI.Stun(1.5f);
+                }
+
                 StartCoroutine(BecomeTemporarilyInvincible(0.5f));
                 return;
             }
